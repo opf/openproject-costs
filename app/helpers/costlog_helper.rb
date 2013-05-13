@@ -80,11 +80,11 @@ module CostlogHelper
     width = options[:width] || '100px;'
     legend = options[:legend] || ''
     content_tag('table',
-      content_tag('tr',
-        content_tag('td', '', :style => "width: #{((100.0 / pcts) * 100).round}%;", :class => 'closed') +
-        content_tag('td', '', :style => "width: #{100.0 - ((100.0 / pcts) * 100).round}%;", :class => 'exceeded')
-      ), :class => 'progress', :style => "width: #{width};") +
-      content_tag('p', legend, :class => 'pourcent')
+      concat('tr',
+        concat('td', '', :style => "width: #{((100.0 / pcts) * 100).round}%;", :class => 'closed') +
+        concat('td', '', :style => "width: #{100.0 - ((100.0 / pcts) * 100).round}%;", :class => 'exceeded')
+      ), :class => 'progress', :style => "width: #{width};").html_safe +
+      content_tag('p', legend, :class => 'pourcent').html_safe
   end
 
   def clean_currency(value)
