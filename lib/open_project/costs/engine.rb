@@ -130,9 +130,6 @@ module OpenProject::Costs
             permission :view_own_time_entries, {:timelog => [:details, :report]}
           end
 
-          view_time_entries = Redmine::AccessControl.permission(:view_time_entries)
-          view_time_entries.actions << "cost_reports/index"
-
           # Menu extensions
           menu :top_menu,
                :cost_types,
