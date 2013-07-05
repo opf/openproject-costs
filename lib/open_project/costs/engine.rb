@@ -12,6 +12,7 @@ module OpenProject::Costs
       require 'open_project/costs/hooks'
       require 'open_project/costs/hooks/issue_hook'
       require 'open_project/costs/hooks/project_hook'
+      require 'open_project/costs/hooks/work_package_action_menu'
     end
 
     config.autoload_paths += Dir["#{config.root}/lib/"]
@@ -64,6 +65,7 @@ module OpenProject::Costs
       require 'open_project/costs/patches'
 
       # Model Patches
+      require_dependency 'open_project/costs/patches/work_package_patch'
       require_dependency 'open_project/costs/patches/issue_patch'
       require_dependency 'open_project/costs/patches/project_patch'
       require_dependency 'open_project/costs/patches/query_patch'
@@ -75,6 +77,7 @@ module OpenProject::Costs
       # Controller Patchesopen_project/costs/patches/
       require_dependency 'open_project/costs/patches/application_controller_patch'
       require_dependency 'open_project/costs/patches/issues_controller_patch'
+      require_dependency 'open_project/costs/patches/work_packages_controller_patch'
       require_dependency 'open_project/costs/patches/projects_controller_patch'
 
       # Helper Patches
