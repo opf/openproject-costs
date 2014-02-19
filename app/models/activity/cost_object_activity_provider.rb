@@ -43,8 +43,9 @@ class Activity::CostObjectActivityProvider < Activity::BaseActivityProvider
   end
 
   def event_url(event, activity)
-    Rails.application.routes.url_helpers.cost_object_url(url_helper_parameter(event),
-                                                         host: ::Setting.host_name)
+    params = url_helper_parameter(event)
+
+    proc { cost_object_url(params) }
   end
 
   private
