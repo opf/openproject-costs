@@ -25,6 +25,7 @@ module OpenProject::Costs::Hooks
     def work_packages_show_attributes(context = {})
       @work_package = context[:work_package]
       @project = context[:project]
+      @view_context = context[:view_context]
       attributes = context[:attributes]
 
       return unless @project.module_enabled? :costs_module
@@ -84,7 +85,7 @@ module OpenProject::Costs::Hooks
           summed_hours = time_entries.sum(&:hours)
 
           summed_hours > 0 ?
-            link_to(l_hours(summed_hours), work_package_time_entries_path(@work_package)) :
+            @view_context.link_to(l_hours(summed_hours), @view_context.work_package_time_entries_path(@work_package)) :
             empty_element_tag
         end
 
