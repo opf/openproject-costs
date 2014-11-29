@@ -69,12 +69,12 @@ module OpenProject::Costs::Hooks
         txt = pluralize(v[:units], v[:unit], v[:unit_plural])
         if create_link
           # TODO why does this have project_id, work_package_id and cost_type_id params?
-          str_array << link_to(txt, { :controller => '/costlog',
-                                      :action => 'index',
-                                      :project_id => work_package.project,
-                                      :work_package_id => work_package,
-                                      :cost_type_id => k },
-                                      { :title => k.name })
+          str_array << link_to(txt, { controller: '/costlog',
+                                      action: 'index',
+                                      project_id: work_package.project,
+                                      work_package_id: work_package,
+                                      cost_type_id: k },
+                                      { title: k.name })
         else
           str_array << "<span title=\"#{h(k.name)}\">#{txt}</span>"
         end

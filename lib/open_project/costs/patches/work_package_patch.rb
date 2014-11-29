@@ -27,8 +27,8 @@ module OpenProject::Costs::Patches::WorkPackagePatch
     base.class_eval do
       unloadable
 
-      belongs_to :cost_object, :inverse_of => :work_packages
-      has_many :cost_entries, :dependent => :delete_all
+      belongs_to :cost_object, inverse_of: :work_packages
+      has_many :cost_entries, dependent: :delete_all
 
       # disabled for now, implements part of ticket blocking
       validate :validate_cost_object
@@ -54,7 +54,7 @@ module OpenProject::Costs::Patches::WorkPackagePatch
 
     protected
 
-    def cleanup_cost_entries_before_destruction_of(work_packages, user, to_do = { :action => 'destroy'} )
+    def cleanup_cost_entries_before_destruction_of(work_packages, user, to_do = { action: 'destroy'} )
       return false unless to_do.present?
 
       case to_do[:action]
