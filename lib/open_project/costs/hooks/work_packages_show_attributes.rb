@@ -63,7 +63,7 @@ module OpenProject::Costs::Hooks
       attributes
     end
 
-    def summarized_cost_entry_links(cost_entries, work_package, create_link=true)
+    def summarized_cost_entry_links(cost_entries, work_package, create_link = true)
       str_array = []
       cost_entries.each do |k, v|
         txt = pluralize(v[:units], v[:unit], v[:unit_plural])
@@ -74,12 +74,12 @@ module OpenProject::Costs::Hooks
                                       project_id: work_package.project,
                                       work_package_id: work_package,
                                       cost_type_id: k },
-                                      { title: k.name })
+                               title: k.name)
         else
           str_array << "<span title=\"#{h(k.name)}\">#{txt}</span>"
         end
       end
-      str_array.join(", ").html_safe
+      str_array.join(', ').html_safe
     end
   end
 end

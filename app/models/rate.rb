@@ -39,7 +39,6 @@ class Rate < ActiveRecord::Base
     end
   end
 
-
   private
 
   def convert_valid_from_to_date
@@ -48,7 +47,7 @@ class Rate < ActiveRecord::Base
 
   def validate_date_is_a_date
     valid_from.to_date
-  rescue Exception
+  rescue
     errors.add :valid_from, :not_a_date
   end
 end

@@ -19,7 +19,6 @@
 
 module OpenProject::Costs
   class AttributesHelper
-
     def initialize(work_package)
       @work_package = work_package
     end
@@ -48,7 +47,7 @@ module OpenProject::Costs
     def compute_summarized_cost_entries
       return {} if cost_entries.blank? || !user_allowed_to?(:view_cost_entries, :view_own_cost_entries)
 
-      last_cost_type = ""
+      last_cost_type = ''
 
       cost_entries.sort_by(&:id).each_with_object({}) do |entry, hash|
         if entry.cost_type == last_cost_type
@@ -69,12 +68,12 @@ module OpenProject::Costs
     end
 
     def material_costs
-      cost_entries_with_rate = cost_entries.select{|c| c.costs_visible_by?(User.current)}
+      cost_entries_with_rate = cost_entries.select { |c| c.costs_visible_by?(User.current) }
       cost_entries_with_rate.blank? ? nil : cost_entries_with_rate.collect(&:real_costs).sum
     end
 
     def labor_costs
-      time_entries_with_rate = time_entries.select{|c| c.costs_visible_by?(User.current)}
+      time_entries_with_rate = time_entries.select { |c| c.costs_visible_by?(User.current) }
       time_entries_with_rate.blank? ? nil : time_entries_with_rate.collect(&:real_costs).sum
     end
 

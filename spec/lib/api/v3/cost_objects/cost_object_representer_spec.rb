@@ -21,15 +21,19 @@ require 'spec_helper'
 
 describe ::API::V3::CostObjects::CostObjectRepresenter do
   let(:project) { FactoryGirl.build(:project, id: 999) }
-  let(:user) { FactoryGirl.build(:user,
-                                 member_in_project: project,
-                                 created_on: 1.day.ago,
-                                 updated_on: Date.today) }
-  let(:cost_object) { FactoryGirl.build(:cost_object,
-                                        author: user,
-                                        project: project,
-                                        created_on: 1.day.ago,
-                                        updated_on: Date.today) }
+  let(:user) {
+    FactoryGirl.build(:user,
+                      member_in_project: project,
+                      created_on: 1.day.ago,
+                      updated_on: Date.today)
+  }
+  let(:cost_object) {
+    FactoryGirl.build(:cost_object,
+                      author: user,
+                      project: project,
+                      created_on: 1.day.ago,
+                      updated_on: Date.today)
+  }
 
   let(:representer)  { described_class.new(cost_object) }
 

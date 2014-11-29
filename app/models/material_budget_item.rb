@@ -34,14 +34,14 @@ class MaterialBudgetItem < ActiveRecord::Base
                                  project: project)
   end
 
-  scope :visible_costs, lambda{|*args|
-    { include: [{cost_object: :project}],
+  scope :visible_costs, lambda {|*args|
+    { include: [{ cost_object: :project }],
       conditions: MaterialBudgetItem.visible_condition((args.first || User.current), args[1])
     }
   }
 
   def costs
-    self.budget || self.calculated_costs
+    budget || calculated_costs
   end
 
   def calculated_costs(fixed_date = cost_object.fixed_date)

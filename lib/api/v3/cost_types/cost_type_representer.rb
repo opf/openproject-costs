@@ -30,7 +30,7 @@ module API
 
         self.as_strategy = API::Utilities::CamelCasingStrategy.new
 
-        def initialize(model, unit_summary, options = {}, *expand)
+        def initialize(model, unit_summary, options = {}, *_expand)
           @summary = unit_summary
           @work_package = options[:work_package]
           @current_user = options[:current_user]
@@ -45,8 +45,8 @@ module API
         property :units,
                  getter: -> (*) {
                    cost_entries = @work_package.cost_entries
-                                               .visible(@current_user, @work_package.project)
-                                               .where(cost_type_id: represented.id)
+                                  .visible(@current_user, @work_package.project)
+                                  .where(cost_type_id: represented.id)
 
                    cost_entries.sum(&:units)
                  },

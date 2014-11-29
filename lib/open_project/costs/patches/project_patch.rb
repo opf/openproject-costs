@@ -31,6 +31,5 @@ module OpenProject::Costs::Patches::ProjectPatch
                                conditions: "#{Principal.table_name}.type='Group'"
       has_many :groups, through: :member_groups, source: :principal
     end
-
   end
 end
