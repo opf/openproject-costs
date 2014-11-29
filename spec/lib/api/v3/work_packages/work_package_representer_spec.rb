@@ -21,34 +21,43 @@ require 'spec_helper'
 
 describe ::API::V3::WorkPackages::WorkPackageRepresenter do
   let(:project) { FactoryGirl.create(:project) }
-  let(:role) { FactoryGirl.create(:role, permissions: [:view_time_entries,
-                                                       :view_cost_entries,
-                                                       :view_cost_rates]) }
-  let(:user) { FactoryGirl.create(:user,
-                                  member_in_project: project,
-                                  member_through_role: role) }
+  let(:role) {
+    FactoryGirl.create(:role, permissions: [:view_time_entries,
+                                            :view_cost_entries,
+                                            :view_cost_rates])
+  }
+  let(:user) {
+    FactoryGirl.create(:user,
+                       member_in_project: project,
+                       member_through_role: role)
+  }
 
   let(:cost_object) { FactoryGirl.create(:cost_object, project: project) }
-  let(:cost_entry_1) { FactoryGirl.create(:cost_entry,
-                                          work_package: work_package,
-                                          project: project,
-                                          units: 3,
-                                          spent_on: Date.today,
-                                          user: user,
-                                          comments: "Entry 1") }
-  let(:cost_entry_2) { FactoryGirl.create(:cost_entry,
-                                          work_package: work_package,
-                                          project: project,
-                                          units: 3,
-                                          spent_on: Date.today,
-                                          user: user,
-                                          comments: "Entry 2") }
+  let(:cost_entry_1) {
+    FactoryGirl.create(:cost_entry,
+                       work_package: work_package,
+                       project: project,
+                       units: 3,
+                       spent_on: Date.today,
+                       user: user,
+                       comments: 'Entry 1')
+  }
+  let(:cost_entry_2) {
+    FactoryGirl.create(:cost_entry,
+                       work_package: work_package,
+                       project: project,
+                       units: 3,
+                       spent_on: Date.today,
+                       user: user,
+                       comments: 'Entry 2')
+  }
 
-  let(:work_package) { FactoryGirl.create(:work_package,
-                                          project_id: project.id,
-                                          cost_object: cost_object) }
+  let(:work_package) {
+    FactoryGirl.create(:work_package,
+                       project_id: project.id,
+                       cost_object: cost_object)
+  }
   let(:representer) { described_class.new(work_package, current_user: user) }
-
 
   before(:each) do
     allow(User).to receive(:current).and_return user
@@ -90,7 +99,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
           allow(user).to receive(:allowed_to?).and_return false
           allow(user).to receive(:allowed_to?).with(:view_own_time_entries,
                                                     cost_object.project)
-                                              .and_return(true)
+            .and_return(true)
         end
 
         it { should have_json_path('spentTime') }
@@ -111,7 +120,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
         allow(user).to receive(:allowed_to?).and_return false
         allow(user).to receive(:allowed_to?).with(:view_time_entries,
                                                   cost_object.project)
-                                            .and_return true
+          .and_return true
 
         is_expected.to have_json_path('_links/timeEntries/href')
       end
@@ -120,7 +129,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
         allow(user).to receive(:allowed_to?).and_return false
         allow(user).to receive(:allowed_to?).with(:view_own_time_entries,
                                                   cost_object.project)
-                                            .and_return true
+          .and_return true
 
         is_expected.to have_json_path('_links/timeEntries/href')
       end

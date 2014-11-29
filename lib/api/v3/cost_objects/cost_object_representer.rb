@@ -30,7 +30,7 @@ module API
 
         self.as_strategy = API::Utilities::CamelCasingStrategy.new
 
-        def initialize(model, options = {}, *expand)
+        def initialize(model, _options = {}, *expand)
           @expand = expand
 
           super(model)
