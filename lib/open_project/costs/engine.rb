@@ -65,11 +65,11 @@ module OpenProject::Costs
       end
 
       # Menu extensions
-      menu :top_menu,
+      menu :admin_menu,
            :cost_types,
            {:controller => '/cost_types', :action => 'index'},
-           :caption => :cost_types_title,
-           :if => Proc.new { User.current.admin? }
+           :html => { :class => 'icon2 icon-tracker' },
+           :caption => :cost_types_title
 
       menu :project_menu,
            :cost_objects,
