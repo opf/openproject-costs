@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <% end %>
 
 <%= styled_form_tag(cost_types_path, { :method => :get, :id => 'query_form' }) do %>
-  <fieldset id="filters">
-    <legend><%= l(:label_filter_plural) %></legend>
+  <fieldset id="filters" class="form--fieldset">
+    <legend class="form--fieldset-legend"><%= l(:label_filter_plural) %></legend>
     <div class="form--field">
       <%= styled_label_tag :fixed_date, l(:label_fixed_date) %>
       <%= styled_text_field_tag :fixed_date, @fixed_date %>

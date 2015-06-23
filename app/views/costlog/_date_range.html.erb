@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ++#%>
 
-<fieldset id="filters">
-  <legend><%= l(:label_date_range) %></legend>
+<fieldset id="filters" class="form--fieldset">
+  <legend class="form--fieldset-legend"><%= l(:label_date_range) %></legend>
   <div class="form--field">
     <%= styled_radio_button_tag 'period_type', '1', !@free_period %>
   </div>
