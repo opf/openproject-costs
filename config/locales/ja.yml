@@ -39,7 +39,7 @@ ja:
     models:
       cost_object: 予算
       cost_type:
-        other: Cost types
+        other: コスト種類
       material_budget_item: ユニット
       rate: 原価率
     errors:
@@ -165,6 +165,6 @@ ja:
   text_warning_hidden_elements: いくつかのエントリは、集計から除外されている可能性があります。
   week: 週間
   x_entries:
-    other: '%{count} entries'
+    other: '%{count}つエントリー'
   js:
     text_are_you_sure: よろしいですか？
