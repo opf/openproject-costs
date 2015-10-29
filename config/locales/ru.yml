@@ -39,9 +39,9 @@ ru:
     models:
       cost_object: Бюджет
       cost_type:
-        one: Тип расходов
-        few: Cost types
-        other: Типы расходов
+        one: Тип затрат
+        few: Типы затрат
+        other: Типы затрат
       material_budget_item: Единица
       rate: Тариф
     errors:
@@ -168,7 +168,7 @@ ru:
   week: неделя
   x_entries:
     one: 1 запись
-    few: '%{count} entries'
+    few: '%{count} записи'
     other: '%{count} записей'
   js:
     text_are_you_sure: Уверены?
