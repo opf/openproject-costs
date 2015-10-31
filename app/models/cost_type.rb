@@ -50,8 +50,8 @@ class CostType < ActiveRecord::Base
 
   def rate_at(date)
     CostRate.where(['cost_type_id = ? and valid_from <= ?', id, date])
-            .order('valid_from DESC')
-            .first
+      .order('valid_from DESC')
+      .first
   end
 
   def visible?(user)

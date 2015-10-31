@@ -21,8 +21,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper.rb')
 
 describe 'hourly rates on a member', type: :feature, js: true do
   let(:project) { FactoryGirl.build :project }
-  let(:user) { FactoryGirl.create :admin, member_in_project: project,
-                                          member_through_role: [FactoryGirl.create(:role)] }
+  let(:user) {
+    FactoryGirl.create :admin, member_in_project: project,
+                               member_through_role: [FactoryGirl.create(:role)]
+  }
   let(:member) { Member.find_by(project: project, user: user) }
 
   def view_rates

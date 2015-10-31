@@ -63,7 +63,7 @@ module OpenProject::Costs::Patches::TimeEntryPatch
         ids = if work_packages.respond_to?(:pluck)
                 work_packages.pluck(:id)
               else
-                Array(work_packages).map { |wp| wp.id }
+                Array(work_packages).map(&:id)
               end
         TimeEntry.where(work_package_id: ids)
           .joins(work_package: :project)

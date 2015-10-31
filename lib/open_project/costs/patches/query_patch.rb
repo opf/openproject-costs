@@ -20,7 +20,7 @@
 module OpenProject::Costs::Patches::QueryPatch
   class CurrencyQueryColumn < QueryColumn
     include ActionView::Helpers::NumberHelper
-    alias :super_value :value
+    alias_method :super_value, :value
 
     def initialize(name, options = {})
       super

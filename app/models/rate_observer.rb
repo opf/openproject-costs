@@ -191,6 +191,6 @@ class RateObserver < ActiveRecord::Observer
 
   def after_destroy(rate)
     entry_class = rate.is_a?(HourlyRate) ? TimeEntry : CostEntry
-    entry_class.where(rate_id: rate.id).each(&:update_costs!)
+    entry_class.where(rate_id: rate.id).find_each(&:update_costs!)
   end
 end
