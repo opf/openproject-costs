@@ -33,7 +33,7 @@ angular.module('openproject.workPackages.directives')
     restrict: 'E',
     trasclude: true,
     require: '^inplaceEditorDisplayPane',
-    templateUrl: '/assets/work_packages/summarized_cost_entries.html',
+    templateUrl: '/templates/work_packages/summarized_cost_entries.html',
     link: function(scope, element, attributes, displayPaneController) {
       scope.workPackage = displayPaneController.getWorkPackage();
       scope.costTypes = scope
