@@ -33,7 +33,7 @@ angular.module('openproject.workPackages.directives')
     restrict: 'E',
     trasclude: true,
     require: '^inplaceEditorDisplayPane',
-    templateUrl: '/assets/work_packages/cost_object.html',
+    templateUrl: '/templates/work_packages/cost_object.html',
     link: function(scope, element, attributes, displayPaneController) {
       scope.$watch(function() {
         return displayPaneController.getWorkPackage();
