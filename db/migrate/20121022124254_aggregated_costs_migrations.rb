@@ -63,12 +63,12 @@ class AggregatedCostsMigrations < ActiveRecord::Migration
         t.integer 'project_id',                                                         null: false
         t.integer 'issue_id',                                                           null: false
         t.integer 'cost_type_id',                                                       null: false
-        t.float 'units',                                                              null: false
-        t.date 'spent_on',                                                           null: false
+        t.float 'units', null: false
+        t.date 'spent_on', null: false
         t.datetime 'created_on',                                                         null: false
         t.datetime 'updated_on',                                                         null: false
-        t.string 'comments',                                                           null: false
-        t.boolean 'blocked',                                         default: false, null: false
+        t.string 'comments', null: false
+        t.boolean 'blocked', default: false, null: false
         t.decimal 'overridden_costs', precision: 15, scale: 4
         t.decimal 'costs',            precision: 15, scale: 4
         t.integer 'rate_id'
@@ -80,9 +80,9 @@ class AggregatedCostsMigrations < ActiveRecord::Migration
       create_table 'cost_objects' do |t|
         t.integer 'project_id',                                 null: false
         t.integer 'author_id',                                  null: false
-        t.string 'subject',                                    null: false
-        t.text 'description',                                null: false
-        t.string 'type',                                       null: false
+        t.string 'subject', null: false
+        t.text 'description', null: false
+        t.string 'type', null: false
         t.boolean 'project_manager_signoff', default: false, null: false
         t.boolean 'client_signoff',          default: false, null: false
         t.date 'fixed_date',                                 null: false
@@ -94,30 +94,30 @@ class AggregatedCostsMigrations < ActiveRecord::Migration
         t.string 'name',                           null: false
         t.string 'unit',                           null: false
         t.string 'unit_plural',                    null: false
-        t.boolean 'default',     default: false, null: false
+        t.boolean 'default', default: false, null: false
         t.datetime 'deleted_at'
       end
 
       create_table 'labor_budget_items' do |t|
-        t.integer 'cost_object_id',                                                null: false
-        t.float 'hours',                                                         null: false
+        t.integer 'cost_object_id', null: false
+        t.float 'hours', null: false
         t.integer 'user_id'
-        t.string 'comments',                                      default: '', null: false
-        t.decimal 'budget',         precision: 15, scale: 4
+        t.string 'comments', default: '', null: false
+        t.decimal 'budget', precision: 15, scale: 4
       end
 
       create_table 'material_budget_items' do |t|
-        t.integer 'cost_object_id',                                                null: false
-        t.float 'units',                                                         null: false
+        t.integer 'cost_object_id', null: false
+        t.float 'units', null: false
         t.integer 'cost_type_id'
-        t.string 'comments',                                      default: '', null: false
-        t.decimal 'budget',         precision: 15, scale: 4
+        t.string 'comments', default: '', null: false
+        t.decimal 'budget', precision: 15, scale: 4
       end
 
       create_table 'rates' do |t|
-        t.date 'valid_from',                                  null: false
-        t.decimal 'rate',         precision: 15, scale: 4, null: false
-        t.string 'type',                                        null: false
+        t.date 'valid_from', null: false
+        t.decimal 'rate', precision: 15, scale: 4, null: false
+        t.string 'type', null: false
         t.integer 'project_id'
         t.integer 'user_id'
         t.integer 'cost_type_id'

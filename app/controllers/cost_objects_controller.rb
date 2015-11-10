@@ -18,16 +18,16 @@
 #++
 
 class CostObjectsController < ApplicationController
-  before_filter :find_cost_object, only: [:show, :edit, :update, :copy]
-  before_filter :find_cost_objects, only: :destroy
-  before_filter :find_project, only: [
+  before_action :find_cost_object, only: [:show, :edit, :update, :copy]
+  before_action :find_cost_objects, only: :destroy
+  before_action :find_project, only: [
     :new, :create,
     :update_material_budget_item, :update_labor_budget_item
   ]
-  before_filter :find_optional_project, only: :index
+  before_action :find_optional_project, only: :index
 
-  before_filter :authorize_global, only: :index
-  before_filter :authorize, except: [
+  before_action :authorize_global, only: :index
+  before_action :authorize, except: [
     # unrestricted actions
     :index,
     :update_material_budget_item, :update_labor_budget_item
@@ -180,7 +180,11 @@ class CostObjectsController < ApplicationController
     cost_type = CostType.find(params[:cost_type_id]) if params.has_key? :cost_type_id
 
     units = BigDecimal.new(Rate.clean_currency(params[:units]))
-    costs = (units * cost_type.rate_at(params[:fixed_date]).rate rescue 0.0)
+    costs = (begin
+               units * cost_type.rate_at(params[:fixed_date]).rate
+             rescue
+               0.0
+             end)
 
     if request.xhr?
       render :update do |page|
@@ -200,7 +204,11 @@ class CostObjectsController < ApplicationController
     user = User.find(params[:user_id])
 
     hours = params[:hours].to_hours
-    costs = hours * user.rate_at(params[:fixed_date], @project).rate rescue 0.0
+    costs = begin
+              hours * user.rate_at(params[:fixed_date], @project).rate
+            rescue
+              0.0
+            end
 
     if request.xhr?
       render :update do |page|

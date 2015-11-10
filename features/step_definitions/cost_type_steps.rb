@@ -19,16 +19,16 @@
 
 Given /^there is 1 cost type with the following:$/ do |table|
   ct = FactoryGirl.build(:cost_type)
-  send_table_to_object(ct, table,     cost_rate: Proc.new do |o, v|
+  send_table_to_object(ct, table, cost_rate: Proc.new do |o, v|
     FactoryGirl.create(:cost_rate, rate: v,
                                    cost_type: o)
   end,
-                                      name: Proc.new do |o, v|
-                                        o.name = v
-                                        o.unit = v
-                                        o.unit_plural = "#{v}s"
-                                        o.save!
-                                      end)
+                                  name: Proc.new do |o, v|
+                                    o.name = v
+                                    o.unit = v
+                                    o.unit_plural = "#{v}s"
+                                    o.save!
+                                  end)
 end
 
 When(/^I delete the cost type "(.*?)"$/) do |name|

@@ -22,7 +22,7 @@ class AddCostObjectJournals < ActiveRecord::Migration
       t.integer :journal_id,  null: false
       t.integer :project_id,  null: false
       t.integer :author_id,   null: false
-      t.string :subject,     null: false
+      t.string :subject, null: false
       t.text :description
       t.date :fixed_date,  null: false
       t.datetime :created_on

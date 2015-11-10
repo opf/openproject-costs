@@ -66,7 +66,7 @@ module CostlogHelper
 
     value = value.strip
     value.gsub!(l(:currency_delimiter), '') if value.include?(l(:currency_delimiter)) && value.include?(l(:currency_separator))
-    value.gsub(',', '.')
+    value.tr(',', '.')
     BigDecimal.new(value)
   end
 

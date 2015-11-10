@@ -19,8 +19,8 @@
 
 class CostTypesController < ApplicationController
   # Allow only admins here
-  before_filter :require_admin
-  before_filter :find_cost_type, only: [:edit, :update, :set_rate, :destroy, :restore]
+  before_action :require_admin
+  before_action :find_cost_type, only: [:edit, :update, :set_rate, :destroy, :restore]
   layout 'admin'
 
   helper :sort
@@ -38,7 +38,11 @@ class CostTypesController < ApplicationController
     @cost_types = CostType.order(sort_clause)
 
     unless params[:clear_filter]
-      @fixed_date = Date.parse(params[:fixed_date]) rescue Date.today
+      @fixed_date = begin
+                      Date.parse(params[:fixed_date])
+                    rescue
+                      Date.today
+                    end
       @include_deleted = params[:include_deleted]
     else
       @fixed_date = Date.today

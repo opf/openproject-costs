@@ -18,7 +18,7 @@
 #++
 
 FactoryGirl.define do
-  factory :cost_object  do
+  factory :cost_object do
     subject 'Some Cost Object'
     description 'Some costs'
     kind 'VariableCostObject'

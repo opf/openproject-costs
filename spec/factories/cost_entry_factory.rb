@@ -18,7 +18,7 @@
 #++
 
 FactoryGirl.define do
-  factory :cost_entry  do
+  factory :cost_entry do
     project
     user do FactoryGirl.create(:user, member_in_project: project)end
     work_package do FactoryGirl.create(:work_package, project: project) end

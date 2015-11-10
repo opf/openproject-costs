@@ -18,7 +18,7 @@
 #++
 
 FactoryGirl.define do
-  factory :cost_type  do
+  factory :cost_type do
     sequence(:name) do |n| "ct no. #{n}" end
     unit 'singular_unit'
     unit_plural 'plural_unit'
