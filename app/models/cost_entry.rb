@@ -18,7 +18,7 @@
 #++
 
 class CostEntry < ActiveRecord::Base
-  belongs_to :project
+  belongs_to :project, touch: true
   belongs_to :work_package
   belongs_to :user
   include ::OpenProject::Costs::DeletedUserFallback

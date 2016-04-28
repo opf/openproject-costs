@@ -25,7 +25,7 @@ class Rate < ActiveRecord::Base
 
   belongs_to :user
   include ::OpenProject::Costs::DeletedUserFallback
-  belongs_to :project
+  belongs_to :project, touch: true
 
   include ActiveModel::ForbiddenAttributesProtection
 
