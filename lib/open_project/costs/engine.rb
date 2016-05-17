@@ -172,7 +172,10 @@ module OpenProject::Costs
 
       property :overall_costs,
                exec_context: :decorator,
-               if: -> (*) { represented.costs_enabled? },
+               if: -> (*) {
+                 (user_has_time_entry_permissions? && user_has_hourly_rate_permissions?) ||
+                   (user_has_cost_entries_permissions? && user_has_cost_rates_permission?)
+               },
                render_nil: true
 
       linked_property :costs_by_type,
@@ -196,7 +199,7 @@ module OpenProject::Costs
                if: -> (_) { user_has_time_entry_permissions? }
 
       send(:define_method, :overall_costs) do
-        number_to_currency(attributes_helper.overall_costs)
+        number_to_currency(represented.overall_costs)
       end
 
       send(:define_method, :labor_costs) do
@@ -205,10 +208,6 @@ module OpenProject::Costs
 
       send(:define_method, :material_costs) do
         number_to_currency(represented.material_costs)
-      end
-
-      send(:define_method, :attributes_helper) do
-        @attributes_helper ||= OpenProject::Costs::AttributesHelper.new(represented)
       end
 
       send(:define_method, :cost_object) do
