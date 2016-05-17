@@ -160,9 +160,20 @@ module OpenProject::Costs
                       embed_as: ::API::V3::Budgets::BudgetRepresenter,
                       show_if: -> (*) { represented.costs_enabled? }
 
+      property :labor_costs,
+               exec_context: :decorator,
+               if: -> (*) { user_has_time_entry_permissions? && user_has_hourly_rate_permissions? },
+               render_nil: true
+
+      property :material_costs,
+               exec_context: :decorator,
+               if: -> (*) { user_has_cost_entries_permissions? && user_has_cost_rates_permission? },
+               render_nil: true
+
       property :overall_costs,
                exec_context: :decorator,
-               if: -> (*) { represented.costs_enabled? }
+               if: -> (*) { represented.costs_enabled? },
+               render_nil: true
 
       linked_property :costs_by_type,
                       title_getter: -> (*) { nil },
@@ -188,6 +199,14 @@ module OpenProject::Costs
         number_to_currency(attributes_helper.overall_costs)
       end
 
+      send(:define_method, :labor_costs) do
+        number_to_currency(represented.labor_costs)
+      end
+
+      send(:define_method, :material_costs) do
+        number_to_currency(represented.material_costs)
+      end
+
       send(:define_method, :attributes_helper) do
         @attributes_helper ||= OpenProject::Costs::AttributesHelper.new(represented)
       end
@@ -198,7 +217,22 @@ module OpenProject::Costs
 
       send(:define_method, :user_has_time_entry_permissions?) do
         current_user_allowed_to(:view_time_entries, context: represented.project) ||
-          (current_user_allowed_to(:view_own_time_entries, context: represented.project) && represented.costs_enabled?)
+          (current_user_allowed_to(:view_own_time_entries, context: represented.project) &&
+          represented.costs_enabled?)
+      end
+
+      send(:define_method, :user_has_hourly_rate_permissions?) do
+        current_user_allowed_to(:view_hourly_rates, context: represented.project) ||
+          current_user_allowed_to(:view_own_hourly_rates, context: represented.project)
+      end
+
+      send(:define_method, :user_has_cost_rates_permission?) do
+        current_user_allowed_to(:view_cost_rates, context: represented.project)
+      end
+
+      send(:define_method, :user_has_cost_entries_permissions?) do
+        current_user_allowed_to(:view_own_cost_entries, context: represented.project) ||
+          current_user_allowed_to(:view_cost_entries, context: represented.project)
       end
     end
 
