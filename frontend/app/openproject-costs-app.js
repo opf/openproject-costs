@@ -33,6 +33,8 @@ localeFiles.keys().forEach(function(localeFile) {
   I18n.addTranslations(locale, localeFiles(localeFile)[locale]);
 });
 
+var CostsByTypeDisplayField = require('./components/wp-display/field-types/wp-display-costs-by-type-field.module').CostsByTypeDisplayField;
+
 // Register Budget as select inline edit
 angular
   .module('openproject')
@@ -40,6 +42,13 @@ angular
     wpEditField.extendFieldType('select', ['Budget']);
   }]);
 
+// Register the costs attributes for display
+angular
+  .module('openproject')
+  .run(['wpDisplayField', function(wpDisplayField) {
+    wpDisplayField.extendFieldType('resource', ['Budget']);
+    wpDisplayField.addFieldType(CostsByTypeDisplayField, 'costs', ['costsByType']);
+  }]);
 
 // main app
 var openprojectCostsApp = angular.module('openproject');
@@ -58,8 +67,10 @@ openprojectCostsApp.run(['HookService',
     var position = WorkPackagesOverviewService.getGroupedWorkPackageOverviewAttributes().length - 1;
     var costsAttributes = {
       costObject: null,
+      laborCosts: null,
+      materialCosts: null,
       overallCosts: null,
-      costsByType: null,
+      costsByType: null
     };
 
     WorkPackagesOverviewService.addGroup('costs', position);
