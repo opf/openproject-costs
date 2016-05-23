@@ -257,6 +257,18 @@ module OpenProject::Costs
              writable: false,
              show_if: -> (*) { represented.project && represented.project.costs_enabled? }
 
+      schema :labor_costs,
+             type: 'String',
+             required: false,
+             writable: false,
+             show_if: -> (*) { represented.project && represented.project.costs_enabled? }
+
+      schema :material_costs,
+             type: 'String',
+             required: false,
+             writable: false,
+             show_if: -> (*) { represented.project && represented.project.costs_enabled? }
+
       schema :costs_by_type,
              type: 'Collection',
              name_source: :spent_units,

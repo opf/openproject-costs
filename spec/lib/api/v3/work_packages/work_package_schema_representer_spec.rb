@@ -174,6 +174,46 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
     end
   end
 
+  describe 'laborCosts' do
+    it_behaves_like 'has basic schema properties' do
+      let(:path) { 'laborCosts' }
+      let(:type) { 'String' }
+      let(:name) { I18n.t('activerecord.attributes.work_package.labor_costs') }
+      let(:required) { false }
+      let(:writable) { false }
+    end
+
+    context 'costs disabled' do
+      before do
+        allow(schema.project).to receive(:costs_enabled?).and_return(false)
+      end
+
+      it 'has no schema for laborCosts' do
+        is_expected.not_to have_json_path('laborCosts')
+      end
+    end
+  end
+
+  describe 'materialCosts' do
+    it_behaves_like 'has basic schema properties' do
+      let(:path) { 'materialCosts' }
+      let(:type) { 'String' }
+      let(:name) { I18n.t('activerecord.attributes.work_package.material_costs') }
+      let(:required) { false }
+      let(:writable) { false }
+    end
+
+    context 'costs disabled' do
+      before do
+        allow(schema.project).to receive(:costs_enabled?).and_return(false)
+      end
+
+      it 'has no schema for materialCosts' do
+        is_expected.not_to have_json_path('materialCosts')
+      end
+    end
+  end
+
   describe 'costsByType' do
     shared_examples_for 'costsByType visible' do
       it_behaves_like 'has basic schema properties' do
