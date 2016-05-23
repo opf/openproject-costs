@@ -137,6 +137,7 @@ module OpenProject::Costs
     extend_api_response(:v3, :work_packages, :work_package) do
       include Redmine::I18n
       include ActionView::Helpers::NumberHelper
+      include API::V3::CostsAPIUserPermissionCheck
 
       link :log_costs do
         {
@@ -158,24 +159,21 @@ module OpenProject::Costs
                       path: :budget,
                       title_getter: -> (*) { represented.cost_object.subject },
                       embed_as: ::API::V3::Budgets::BudgetRepresenter,
-                      show_if: -> (*) { represented.costs_enabled? }
+                      show_if: -> (*) { cost_object_visible? }
 
       property :labor_costs,
                exec_context: :decorator,
-               if: -> (*) { user_has_time_entry_permissions? && user_has_hourly_rate_permissions? },
+               if: -> (*) { labor_costs_visible? },
                render_nil: true
 
       property :material_costs,
                exec_context: :decorator,
-               if: -> (*) { user_has_cost_entries_permissions? && user_has_cost_rates_permission? },
+               if: -> (*) { material_costs_visible? },
                render_nil: true
 
       property :overall_costs,
                exec_context: :decorator,
-               if: -> (*) {
-                 (user_has_time_entry_permissions? && user_has_hourly_rate_permissions?) ||
-                   (user_has_cost_entries_permissions? && user_has_cost_rates_permission?)
-               },
+               if: -> (*) { overall_costs_visible? },
                render_nil: true
 
       linked_property :costs_by_type,
@@ -183,11 +181,7 @@ module OpenProject::Costs
                       getter: -> (*) { represented },
                       path: :summarized_work_package_costs_by_type,
                       embed_as: ::API::V3::CostEntries::WorkPackageCostsByTypeRepresenter,
-                      show_if: -> (*) {
-                        represented.costs_enabled? &&
-                          (current_user_allowed_to(:view_cost_entries, context: represented.project) ||
-                           current_user_allowed_to(:view_own_cost_entries, context: represented.project))
-                      }
+                      show_if: -> (*) { costs_by_type_visible? }
 
       property :spent_time,
                getter: -> (*) do
@@ -212,26 +206,6 @@ module OpenProject::Costs
 
       send(:define_method, :cost_object) do
         represented.cost_object
-      end
-
-      send(:define_method, :user_has_time_entry_permissions?) do
-        current_user_allowed_to(:view_time_entries, context: represented.project) ||
-          (current_user_allowed_to(:view_own_time_entries, context: represented.project) &&
-          represented.costs_enabled?)
-      end
-
-      send(:define_method, :user_has_hourly_rate_permissions?) do
-        current_user_allowed_to(:view_hourly_rates, context: represented.project) ||
-          current_user_allowed_to(:view_own_hourly_rates, context: represented.project)
-      end
-
-      send(:define_method, :user_has_cost_rates_permission?) do
-        current_user_allowed_to(:view_cost_rates, context: represented.project)
-      end
-
-      send(:define_method, :user_has_cost_entries_permissions?) do
-        current_user_allowed_to(:view_own_cost_entries, context: represented.project) ||
-          current_user_allowed_to(:view_cost_entries, context: represented.project)
       end
     end
 
