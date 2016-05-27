@@ -29,17 +29,17 @@
 require 'support/pages/page'
 
 module Pages
-  class NewBudget < Page
+  class EditBudget < Page
     include BudgetForm
 
-    attr_reader :project_identifier
+    attr_reader :cost_object_id # cost_object == budget
 
-    def initialize(project_identifier)
-      @project_identifier = project_identifier
+    def initialize(cost_object_id)
+      @cost_object_id = cost_object_id
     end
 
     def path
-      "/projects/#{project_identifier}/cost_objects/new"
+      "/cost_objects/#{cost_object_id}"
     end
   end
 end
