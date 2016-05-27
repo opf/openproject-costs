@@ -90,23 +90,6 @@ openprojectCostsApp.run(['HookService',
     return null;
   });
 
-  HookService.register('workPackageOverviewAttributes', function(params) {
-    var directive;
-    switch (params.type) {
-      case "Collection":
-        if (params.field !== 'costsByType') {
-          break;
-        }
-        directive = "summarized-cost-entries";
-        break;
-      case "Budget":
-        directive = "cost-object";
-        break;
-    }
-
-    return directive;
-  });
-
   HookService.register('workPackageDetailsMoreMenu', function(params) {
     return [{
       key: 'log_costs',
@@ -128,11 +111,3 @@ openprojectCostsApp.run(['HookService',
     };
   });
 }]);
-
-var requireTemplate = require.context('./templates', true, /\.html$/);
-requireTemplate.keys().forEach(requireTemplate);
-
-require('./services/cost-type-service');
-require('./work_packages/directives/cost-object-directive');
-require('./work_packages/directives/summarized-cost-entries-directive');
-require('./work_packages/directives/cost-entry-directive');
