@@ -75,7 +75,7 @@ describe 'Work Package table cost sums', type: :feature, js: true do
 
     it 'shows the sums' do
       within('tr.sum.group.all') do
-        expect(page).to have_selector('.wp-table--cell-span', text: '2.5', count: 3)
+        expect(page).to have_selector('.wp-table--cell-span', text: '2.50 EUR', count: 3)
         expect(page).to have_selector('.wp-table--cell-span', text: '-', count: 1)
       end
     end

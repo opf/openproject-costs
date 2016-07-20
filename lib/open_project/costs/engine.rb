@@ -283,6 +283,40 @@ module OpenProject::Costs
              }
     end
 
+    extend_api_response(:v3, :work_packages, :work_package_sums) do
+      include ActionView::Helpers::NumberHelper
+
+      property :overall_costs,
+               exec_context: :decorator,
+               getter: -> (*) {
+                 number_to_currency(represented.overall_costs)
+
+               },
+               if: -> (*) {
+                ::Setting.work_package_list_summable_columns.include?('overall_costs')
+               }
+
+      property :labor_costs,
+               exec_context: :decorator,
+               getter: -> (*) {
+                 number_to_currency(represented.labor_costs)
+
+               },
+               if: -> (*) {
+                ::Setting.work_package_list_summable_columns.include?('labor_costs')
+               }
+
+      property :material_costs,
+               exec_context: :decorator,
+               getter: -> (*) {
+                 number_to_currency(represented.material_costs)
+               },
+               if: -> (*) {
+                ::Setting.work_package_list_summable_columns.include?('material_costs')
+               }
+
+    end
+
     add_api_representer_cache_key(:v3, :work_packages, :schema, :work_package_schema) do
       if represented.project.module_enabled?('costs_module')
         ['costs_enabled']
