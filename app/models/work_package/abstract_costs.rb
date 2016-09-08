@@ -8,10 +8,20 @@ class WorkPackage
       @project = project
     end
 
+    ##
+    # Adds to the given WorkPackage query's result an extra costs column.
+    #
+    # @param work_package_scope [WorkPackage::ActiveRecord_Relation]
+    # @return [WorkPackage::ActiveRecord_Relation] The query with the joined costs.
     def add_to_work_packages(work_package_scope)
       add_costs_to work_package_scope
     end
 
+    ##
+    # For the given work packages calculates the sum of all costs.
+    #
+    # @param [WorkPackage::ActiveRecord_Relation | Array[WorkPackage]] List of work packages.
+    # @return [Float] The sum of the work packages' costs.
     def costs_of(work_packages:)
       # N.B. Because of an AR quirks the code below uses statements like
       #   where(work_package_id: ids)
@@ -27,7 +37,11 @@ class WorkPackage
     end
 
     ##
-    # @return Class of the model the costs are based on, e.g. CostEntry or TimeEntry.
+    # The model on which the costs calculations are based.
+    # Can be any model which has the fields `overridden_costs` and `costs`
+    # and is related to work packages (i.e. has a `work_package_id` too).
+    #
+    # @return [Class] Class of the model the costs are based on, e.g. CostEntry or TimeEntry.
     def costs_model
       raise NotImplementedError, "subclass responsiblity"
     end
@@ -54,7 +68,8 @@ class WorkPackage
       query = costs.to_sql
 
       scope
-        .joins("LEFT JOIN (#{query}) as #{table_alias} ON #{table_alias}.wp_id = work_packages.id")
+        .joins(
+          "LEFT JOIN (#{query}) as #{table_alias} ON #{table_alias}.wp_id = #{wp_table.name}.id")
         .select("#{table_alias}.#{costs_table_name}_sum")
     end
 
@@ -77,6 +92,11 @@ class WorkPackage
       "COALESCE(#{costs_table_name}.overridden_costs, #{costs_table_name}.costs)"
     end
 
+    ##
+    # Narrows down the query to only include costs visible to the user.
+    #
+    # @param [ActiveRecord::QueryMethods] Some query.
+    # @return [ActiveRecord::QueryMethods] The filtered query.
     def filter_authorized(scope)
       scope # allow all
     end
