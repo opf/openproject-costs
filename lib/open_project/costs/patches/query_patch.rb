@@ -62,26 +62,32 @@ module OpenProject::Costs::Patches::QueryPatch
       add_available_column(CurrencyQueryColumn.new(
                              :material_costs,
                              summable: -> (work_packages) {
-                               CostEntry.costs_of(work_packages: work_packages)
+                               WorkPackage::MaterialCosts
+                                 .new(user: User.current)
+                                 .costs_of(work_packages: work_packages)
                              }))
 
       add_available_column(CurrencyQueryColumn.new(
                              :labor_costs,
                              summable: -> (work_packages) {
-                               TimeEntry.costs_of(work_packages: work_packages)
+                               WorkPackage::LaborCosts
+                                 .new(user: User.current)
+                                 .costs_of(work_packages: work_packages)
                              }))
 
       add_available_column(CurrencyQueryColumn.new(
                              :overall_costs,
                              summable: -> (work_packages) {
-                               labor_costs = TimeEntry.costs_of(work_packages: work_packages)
-                               material_costs = CostEntry.costs_of(work_packages: work_packages)
+                               labor_costs = WorkPackage::LaborCosts
+                                 .new(user: User.current)
+                                 .costs_of(work_packages: work_packages)
+
+                               material_costs = WorkPackage::MaterialCosts
+                                 .new(user: User.current)
+                                 .costs_of(work_packages: work_packages)
+
                                labor_costs + material_costs
                              }))
-
-      Queries::WorkPackages::Filter.add_filter_type_by_field('cost_object_id', 'list_optional')
-
-      alias_method_chain :available_work_package_filters, :costs
     end
   end
 
@@ -89,24 +95,5 @@ module OpenProject::Costs::Patches::QueryPatch
   end
 
   module InstanceMethods
-    # Wrapper around the +available_filters+ to add a new Cost Object filter
-    def available_work_package_filters_with_costs
-      @available_filters = available_work_package_filters_without_costs
-
-      if project && project.module_enabled?(:costs_module)
-        openproject_costs_filters = {
-          'cost_object_id' => {
-            type: :list_optional,
-            order: 14,
-            values: CostObject.where(project_id: project)
-                    .order('subject ASC')
-                    .pluck(:subject, :id)
-          },
-        }
-      else
-        openproject_costs_filters = {}
-      end
-      @available_filters.merge(openproject_costs_filters)
-    end
   end
 end

@@ -17,15 +17,39 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #++
 
-class CostsWorkPackageObserver < ActiveRecord::Observer
-  observe :work_package
+module OpenProject::Costs
+  class WorkPackageFilter < ::Queries::BaseFilter
 
-  def after_update(work_package)
-    if work_package.project_id_changed?
-      # TODO: This only works with the global cost_rates
-      CostEntry
-        .where(work_package_id: work_package.id)
-        .update_all(project_id: work_package.project_id)
+    alias :project :context
+    alias :project= :context=
+
+    def allowed_values
+      CostObject
+        .where(project_id: project)
+        .order('subject ASC')
+        .pluck(:subject, :id)
+    end
+
+    def available?
+      project &&
+        project.module_enabled?(:costs_module)
+    end
+
+    def self.key
+      :cost_object_id
+    end
+
+    def order
+      14
+    end
+
+    def type
+      :list_optional
+    end
+
+    def human_name
+      WorkPackage.human_attribute_name(:cost_object)
     end
   end
 end
+

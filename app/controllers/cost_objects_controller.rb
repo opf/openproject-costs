@@ -60,13 +60,11 @@ class CostObjectsController < ApplicationController
     sort_init 'id', 'desc'
     sort_update sort_columns
 
-    allowed_condition = Project.allowed_to(User.current,
-                                           :view_cost_objects,
-                                           project: @project)
-
-    @cost_objects = CostObject.order(sort_clause)
-                    .includes(:project, :author)
-                    .merge(allowed_condition)
+    @cost_objects = CostObject
+                    .visible(current_user)
+                    .order(sort_clause)
+                    .includes(:author)
+                    .where(project_id: @project.id)
                     .page(page_param)
                     .per_page(per_page_param)
 
@@ -175,43 +173,27 @@ class CostObjectsController < ApplicationController
   end
 
   def update_material_budget_item
-    element_id = params[:element_id] if params.has_key? :element_id
+    @element_id = params[:element_id] if params[:element_id].present?
 
-    cost_type = CostType.find(params[:cost_type_id]) if params.has_key? :cost_type_id
+    @cost_type = CostType.find(params[:cost_type_id]) if params[:cost_type_id].present?
 
-    units = BigDecimal.new(Rate.clean_currency(params[:units]))
-    costs = (units * cost_type.rate_at(params[:fixed_date]).rate rescue 0.0)
+    @units = BigDecimal.new(Rate.clean_currency(params[:units]))
+    @costs = (@units * @cost_type.rate_at(params[:fixed_date]).rate rescue 0.0)
 
-    if request.xhr?
-      render :update do |page|
-        if User.current.allowed_to? :view_cost_rates, @project
-          page.replace_html "#{element_id}_costs", number_to_currency(costs)
-        end
-        page.replace_html "#{element_id}_unit_name", h(units == 1.0 ? cost_type.unit : cost_type.unit_plural)
-      end
+    respond_to do |format|
+      format.js { render :update_material_budget_item }
     end
-  rescue ActiveRecord::RecordNotFound
-    render_404
   end
 
   def update_labor_budget_item
-    element_id = params[:element_id] if params.has_key? :element_id
+    @element_id = params[:element_id] if params[:element_id].present?
+    @user = User.find(params[:user_id]) if params[:user_id].present?
 
-    user = User.find(params[:user_id])
+    @hours = params[:hours].to_hours
+    @costs = @hours * @user.rate_at(params[:fixed_date], @project).rate rescue 0.0
 
-    hours = params[:hours].to_hours
-    costs = hours * user.rate_at(params[:fixed_date], @project).rate rescue 0.0
-
-    if request.xhr?
-      render :update do |page|
-        if User.current.allowed_to?(:view_hourly_rates, @project, for: user)
-          page.replace_html "#{element_id}_costs", number_to_currency(costs)
-        end
-      end
-    end
-  rescue ActiveRecord::RecordNotFound
-    render :update do |page|
-      page.replace_html "#{element_id}_costs", number_to_currency(0.0)
+    respond_to do |format|
+      format.js { render :update_labor_budget_item }
     end
   end
 

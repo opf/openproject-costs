@@ -325,21 +325,14 @@ module OpenProject::Costs
       end
     end
 
-    assets %w(costs/costs.css
-              costs/costs.js)
+    assets %w(costs/costs.css)
 
     initializer 'costs.register_hooks' do
       require 'open_project/costs/hooks'
       require 'open_project/costs/hooks/activity_hook'
       require 'open_project/costs/hooks/work_package_hook'
-      require 'open_project/costs/hooks/project_hook'
       require 'open_project/costs/hooks/work_package_action_menu'
       require 'open_project/costs/hooks/work_packages_show_attributes'
-    end
-
-    initializer 'costs.register_observers' do |_app|
-      # Observers
-      ActiveRecord::Base.observers.push :rate_observer, :default_hourly_rate_observer, :costs_work_package_observer
     end
 
     initializer 'costs.patch_number_helper' do |_app|
@@ -353,7 +346,23 @@ module OpenProject::Costs
                                                attribute: :updated_on
     end
 
+    initializer 'costs.register_query_filter' do
+      Queries::Register.filter Query, OpenProject::Costs::WorkPackageFilter
+    end
+
+    module EagerLoadedCosts
+      def eager_loaded_work_packages(ids)
+        material = WorkPackage::MaterialCosts.new
+        labor = WorkPackage::LaborCosts.new
+
+        material.add_to_work_packages(labor.add_to_work_packages(super))
+      end
+    end
+
     config.to_prepare do
+      require 'open_project/costs/patches/members_patch'
+      OpenProject::Costs::Members.mixin!
+
       # loading the class so that acts_as_journalized gets registered
       VariableCostObject
 
@@ -368,6 +377,8 @@ module OpenProject::Costs
                                                                       { cost_entries: [:project,
                                                                                        :user] },
                                                                       :cost_object]
+
+      API::V3::WorkPackages::WorkPackageCollectionRepresenter.prepend EagerLoadedCosts
     end
   end
 end

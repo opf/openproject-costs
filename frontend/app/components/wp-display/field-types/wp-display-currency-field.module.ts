@@ -27,54 +27,13 @@
 //++
 
 import {DisplayField} from 'app/components/wp-display/wp-display-field/wp-display-field.module';
-import {WorkPackageCacheService} from 'app/components/work-packages/work-package-cache.service';
 
-interface ICostsByType {
-  $source: {
-    _links: {
-      costType: {
-        title: string;
-      }
-    }
-  };
-  spentUnits: number;
-}
-
-export class CostsByTypeDisplayField extends DisplayField {
+export class CurrencyDisplayField extends DisplayField {
 
   isManualRenderer = true;
 
-  private wpCacheService:WorkPackageCacheService;
-
-  constructor(public resource:HalResource,
-              public name:string,
-              public schema) {
-    super(resource, name, schema);
-
-    this.wpCacheService = <WorkPackageCacheService> this.$injector.get('wpCacheService');
-    this.loadIfNecessary();
-  }
-
-  protected loadIfNecessary() {
-    if (this.value && this.value.$loaded === false) {
-      this.value.$load().then(() => {
-
-        if (this.resource._type === 'WorkPackage') {
-          this.wpCacheService.updateWorkPackage(this.resource);
-        }
-      });
-    }
-  }
-
-  public get valueString() {
-    return  _.map(this.value.elements, (val: ICostsByType) => {
-      return val.spentUnits + ' ' + val.$source._links.costType.title;
-    }).join(', ');
-  };
-
   public isEmpty(): boolean {
     return !this.value ||
-           !this.value.elements ||
-           this.value.elements.length === 0;
+      !parseFloat(this.value.split(" ")[0]);
   }
 }

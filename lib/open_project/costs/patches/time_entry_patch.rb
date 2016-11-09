@@ -24,56 +24,13 @@ module OpenProject::Costs::Patches::TimeEntryPatch
 
     base.send(:include, InstanceMethods)
 
-    # Same as typing in the class t.update_costs
+    # Same as typing in the class
     base.class_eval do
       belongs_to :rate, -> { where(type: ['HourlyRate', 'DefaultHourlyRate']) }, class_name: 'Rate'
 
       before_save :update_costs
 
-      def self.visible_condition(user, table_alias: nil, project: nil)
-        options = {}
-        options[:project_alias] = table_alias if table_alias
-        options[:project] = project if project
-
-        %{ (#{Project.allowed_to_condition(user,
-                                           :view_time_entries,
-                                           options)} OR
-             (#{Project.allowed_to_condition(user,
-                                             :view_own_time_entries,
-                                             options)} AND
-              #{TimeEntry.table_name}.user_id = #{user.id})) }
-      end
-
-      scope :visible_costs, lambda{|*args|
-        user = args.first || User.current
-        project = args[1]
-
-        view_hourly_rates = %{ (#{Project.allowed_to_condition(user, :view_hourly_rates, project: project)} OR
-                                (#{Project.allowed_to_condition(user, :view_own_hourly_rate, project: project)} AND #{TimeEntry.table_name}.user_id = #{user.id})) }
-        view_time_entries = TimeEntry.visible_condition(user, project: project)
-
-        includes(:project, :user)
-          .where([view_time_entries, view_hourly_rates].join(' AND '))
-      }
-
-      def self.costs_of(work_packages:)
-        # N.B. Because of an AR quirks the code below uses statements like
-        #   where(work_package_id: ids)
-        # You would expect to be able to simply write those as
-        #   where(work_package: work_packages)
-        # However, AR (Rails 4.2) will not expand :includes + :references inside a subquery,
-        # which will render the query invalid. Therefore we manually extract the IDs in a separate (pluck) query.
-        ids = if work_packages.respond_to?(:pluck)
-                work_packages.pluck(:id)
-              else
-                Array(work_packages).map { |wp| wp.id }
-              end
-        TimeEntry.where(work_package_id: ids)
-          .joins(work_package: :project)
-          .visible_costs
-          .sum("COALESCE(#{TimeEntry.table_name}.overridden_costs,
-                         #{TimeEntry.table_name}.costs)").to_f
-      end
+      extend ::TimeEntry::TimeEntryScopes
     end
   end
 

@@ -31,6 +31,8 @@ module OpenProject::Costs::Patches::WorkPackagePatch
       # disabled for now, implements part of ticket blocking
       validate :validate_cost_object
 
+      after_update :move_cost_entries
+
       register_journal_formatter(:cost_association) do |value, journable, field|
         association = journable.class.reflect_on_association(field.to_sym)
         if association
@@ -66,23 +68,27 @@ module OpenProject::Costs::Patches::WorkPackagePatch
 
         false
       when 'reassign'
-        reassign_to = WorkPackage
-                      .where(Project.allowed_to_condition(user, :edit_cost_entries))
-                      .includes(:project)
-                      .references(:projects)
-                      .find_by_id(to_do[:reassign_to_id])
-
-        if reassign_to.nil?
-          work_packages.each do |wp|
-            wp.errors.add(:base, :is_not_a_valid_target_for_cost_entries, id: to_do[:reassign_to_id])
-          end
-
-          false
-        else
-          WorkPackage.update_cost_entries(work_packages.map(&:id), "work_package_id = #{reassign_to.id}, project_id = #{reassign_to.project_id}")
-        end
+        reassign_cost_entries_before_destruction(work_packages, user, to_do[:reassign_to_id])
       else
         false
+      end
+    end
+
+    def reassign_cost_entries_before_destruction(work_packages, user, ids)
+      reassign_to = WorkPackage
+                    .joins(:project)
+                    .merge(Project.allowed_to(user, :edit_cost_entries))
+                    .find_by_id(ids)
+
+      if reassign_to.nil?
+        work_packages.each do |wp|
+          wp.errors.add(:base, :is_not_a_valid_target_for_cost_entries, id: ids)
+        end
+
+        false
+      else
+        condition = "work_package_id = #{reassign_to.id}, project_id = #{reassign_to.project_id}"
+        WorkPackage.update_cost_entries(work_packages.map(&:id), condition)
       end
     end
 
@@ -107,11 +113,19 @@ module OpenProject::Costs::Patches::WorkPackagePatch
     end
 
     def material_costs
-      CostEntry.costs_of(work_packages: self)
+      if respond_to?(:cost_entries_sum) # column has been eager loaded into result set
+        cost_entries_sum.to_f
+      else
+        WorkPackage::MaterialCosts.new(user: User.current).costs_of work_packages: self
+      end
     end
 
     def labor_costs
-      TimeEntry.costs_of(work_packages: self)
+      if respond_to?(:time_entries_sum) # column has been eager loaded into result set
+        time_entries_sum.to_f
+      else
+        WorkPackage::LaborCosts.new(user: User.current).costs_of work_packages: self
+      end
     end
 
     def overall_costs
@@ -129,6 +143,14 @@ module OpenProject::Costs::Patches::WorkPackagePatch
     def update_costs!
       # This methods ist referenced from some migrations but does nothing
       # anymore.
+    end
+
+    def move_cost_entries
+      return unless project_id_changed?
+      # TODO: This only works with the global cost_rates
+      CostEntry
+        .where(work_package_id: id)
+        .update_all(project_id: project_id)
     end
   end
 end
